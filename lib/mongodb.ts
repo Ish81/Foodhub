@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import logger from "./logger";
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -18,23 +19,23 @@ if (!cached) {
 
 export default async function connectDB() {
   if (cached.conn) {
-    console.log("✅ Using existing MongoDB connection");
+    logger.info("Using existing MongoDB connection");
     return cached.conn;
   }
 
   if (!cached.promise) {
-    console.log("🌍 Connecting to MongoDB...");
+    logger.info("Connecting to MongoDB...");
     cached.promise = mongoose
       .connect(MONGODB_URI_STRING, {
         bufferCommands: false,
         serverSelectionTimeoutMS: 5000, // timeout safety
       })
       .then((mongoose) => {
-        console.log("✅ MongoDB connected successfully");
+        logger.info("MongoDB connected successfully");
         return mongoose;
       })
       .catch((err) => {
-        console.error("❌ MongoDB connection error:", err);
+        logger.error("MongoDB connection error:", err);
         throw err;
       });
   }
